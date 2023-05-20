@@ -1,6 +1,8 @@
 package database
 
 import (
+	"fmt"
+
 	"github.com/VictorOliveiraPy/internal/entity"
 	"gorm.io/gorm"
 )
@@ -39,8 +41,11 @@ func (p *Product) FindAll(page, limit int, sort string) ([]entity.Product, error
 func (p *Product) FindByID(id string) (*entity.Product, error) {
 	var product entity.Product
 	err := p.DB.First(&product, "id = ?", id).Error
+	if err!= nil {
+		return nil, fmt.Errorf("foi aqui", id)
+    }
+
 	return &product, err
-	
 }
 
 func (p *Product) Update(product *entity.Product) error{

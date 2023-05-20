@@ -9,6 +9,7 @@ import (
 	"github.com/VictorOliveiraPy/internal/infra/webserver/handlers"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"github.com/go-chi/chi/v5"
 )
 
 func main() {
@@ -16,16 +17,21 @@ func main() {
 	if err!= nil {
         panic(err)
     }
+
 	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 	if err!= nil {
         panic(err)
     }
-	db.AutoMigrate(&entity.Product{}, &entity.User{})
 
+	db.AutoMigrate(&entity.Product{}, &entity.User{})
 	productDB := database.NewProduct(db)
 	ProductHandler := handlers.NewProductHandler(productDB)
+
+	r := chi.NewRouter()
+	r.Post("/products", ProductHandler.CreateProduct)
+	r.Get("/products/{id}", ProductHandler.GetProduct)
+	r.Put("/products/{id}", ProductHandler.UpdateProduct)
 	
-	http.HandleFunc("/products", ProductHandler.CreateProduct)
-	http.ListenAndServe(":8000", nil)
+	http.ListenAndServe(":8000", r)
 }
 

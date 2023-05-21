@@ -10,8 +10,6 @@ Content-Type: application/json
 ###
 
 GET http://localhost:8000/products/eece389c-9269-425b-a5f3-39e4709f52fd
-
-
 ###
 PUT http://localhost:8000/products/eece389c-9269-425b-a5f3-39e4709f52fd
 Content-Type: application/json

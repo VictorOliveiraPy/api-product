@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/VictorOliveiraPy/configs"
@@ -10,6 +9,7 @@ import (
 	"github.com/VictorOliveiraPy/internal/infra/webserver/handlers"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/jwtauth"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -34,12 +34,18 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-	r.Post("/products", ProductHandler.CreateProduct)
-	r.Get("/products/{id}", ProductHandler.GetProduct)
-	r.Put("/products/{id}", ProductHandler.UpdateProduct)
-	r.Delete("/products/{id}", ProductHandler.DeleteProduct)
-	r.Get("/products", ProductHandler.GetProducts)
 
+	r.Route("/products", func(r chi.Router) {
+		r.Use(jwtauth.Verifier(configs.TokenAuth))
+		r.Use(jwtauth.Authenticator)
+	
+		r.Post("/", ProductHandler.CreateProduct)
+		r.Get("/{id}", ProductHandler.GetProduct)
+		r.Get("/", ProductHandler.GetProducts)
+		r.Put("/{id}", ProductHandler.UpdateProduct)
+		r.Delete("/{id}", ProductHandler.DeleteProduct)
+	})
+	
 
 	r.Post("/users",UserHandler.Create)
 	r.Post("/users/generate_token", UserHandler.GetJWTUser)

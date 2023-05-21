@@ -9,14 +9,24 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:8000/products/75bc92a9-1c91-4787-a6c7-670167840fab
+GET http://localhost:8000/products/eece389c-9269-425b-a5f3-39e4709f52fd
 
 
 ###
-PUT http://localhost:8000/products/75bc92a9-1c91-4787-a6c7-670167840fab
+PUT http://localhost:8000/products/eece389c-9269-425b-a5f3-39e4709f52fd
 Content-Type: application/json
 
 {
     "name": "My Updated",
     "price": 100
 }
+
+###
+DELETE  http://localhost:8000/products/eece389c-9269-425b-a5f3-39e4709f52fd
+Content-Type: application/json
+
+
+###
+
+GET http://localhost:8000/products
+

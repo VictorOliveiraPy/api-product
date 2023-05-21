@@ -31,6 +31,8 @@ func main() {
 	r.Post("/products", ProductHandler.CreateProduct)
 	r.Get("/products/{id}", ProductHandler.GetProduct)
 	r.Put("/products/{id}", ProductHandler.UpdateProduct)
+	r.Delete("/products/{id}", ProductHandler.DeleteProduct)
+	r.Get("/products", ProductHandler.GetProducts)
 	
 	http.ListenAndServe(":8000", r)
 }

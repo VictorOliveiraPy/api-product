@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"strconv"
 
 	"net/http"
 
@@ -49,6 +50,32 @@ func (handler *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Requ
 
 
 	w.WriteHeader(http.StatusCreated)
+}
+
+
+func (handler *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request){
+	page := r.URL.Query().Get("page")
+	limit := r.URL.Query().Get("limit")
+
+	pageInt, err := strconv.Atoi(page)
+	if err != nil {
+		pageInt = 0
+	}
+	limitInt, err := strconv.Atoi(limit)
+	if err!= nil {
+        limitInt = 0
+    }
+	
+	sort := r.URL.Query().Get("sort")
+
+	products, err := handler.ProductDB.FindAll(pageInt, limitInt, sort)
+	if err!= nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(products)
 }
 
 func (handler *ProductHandler) GetProduct(w http.ResponseWriter, r *http.Request){
@@ -99,5 +126,28 @@ func (handler *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Requ
 	}
 
     w.WriteHeader(http.StatusOK)
+
+}
+
+func (handler *ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request){
+	id := chi.URLParam(r, "id")
+    if id == "" {
+        w.WriteHeader(http.StatusBadRequest)
+        return
+    }
+
+    _, err := handler.ProductDB.FindByID(id)
+    if err!= nil {
+        w.WriteHeader(http.StatusNotFound)
+        return
+    }
+
+    err = handler.ProductDB.Delete(id)
+    if err!= nil {
+        w.WriteHeader(http.StatusInternalServerError)
+        return
+    }
+
+    w.WriteHeader(http.StatusNoContent)
 
 }

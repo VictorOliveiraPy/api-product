@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/VictorOliveiraPy/configs"
@@ -14,7 +15,7 @@ import (
 )
 
 func main() {
-	_, err := configs.LoadConfig(".")
+	configs, err := configs.LoadConfig(".")
 	if err!= nil {
         panic(err)
     }
@@ -29,7 +30,7 @@ func main() {
 	userDB := database.NewUser(db)
 
 	ProductHandler := handlers.NewProductHandler(productDB)
-	UserHandler := handlers.NewUserHandler(userDB)
+	UserHandler := handlers.NewUserHandler(userDB, configs.TokenAuth, configs.JwtExperesIn)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
@@ -41,6 +42,7 @@ func main() {
 
 
 	r.Post("/users",UserHandler.Create)
+	r.Post("/users/generate_token", UserHandler.GetJWTUser)
 	
 	http.ListenAndServe(":8000", r)
 }

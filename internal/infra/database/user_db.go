@@ -1,6 +1,8 @@
 package database
 
 import (
+	"fmt"
+
 	"github.com/VictorOliveiraPy/internal/entity"
 	"gorm.io/gorm"
 )
@@ -22,7 +24,7 @@ func (u *User) Create(user *entity.User) error {
 func (u *User) FindByEmail(email string) (*entity.User, error) {
 	var user entity.User
 	if err := u.DB.Where("email = ?", email).First(&user).Error; err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error", email)
 	}
 	return &user, nil
 }

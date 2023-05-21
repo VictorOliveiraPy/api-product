@@ -30,3 +30,14 @@ Content-Type: application/json
 
 GET http://localhost:8000/products
 
+
+###
+
+POST http://localhost:8000/users
+Content-Type: application/json
+
+{
+    "name": "victor",
+    "email": "oliveiravictordev@gmail.com",
+    "password": "8858710"
+}

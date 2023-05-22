@@ -19,21 +19,21 @@ type Error struct {
 type UserHandler struct {
 	userDB database.UserInterface
 	Jwt *jwtauth.JWTAuth
-	JwtExperiesIn int
-
 }
 
-func NewUserHandler(userDB database.UserInterface, jwt *jwtauth.JWTAuth, JwtExperiesIn int) *UserHandler {
+func NewUserHandler(userDB database.UserInterface) *UserHandler {
 	return &UserHandler{
         userDB: userDB,
-        Jwt: jwt,
-        JwtExperiesIn: JwtExperiesIn,
     }
 	
 }
 
 func (handler *UserHandler) GetJWTUser(w http.ResponseWriter, r *http.Request){
+	jwt := r.Context().Value("jwt").(*jwtauth.JWTAuth)
+	JwtExperesIn := r.Context().Value("JwtExperesIn").(int)
+
 	var user dto.GetJWTInput
+
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err!= nil {
         http.Error(w, err.Error(), http.StatusBadRequest)
@@ -41,6 +41,7 @@ func (handler *UserHandler) GetJWTUser(w http.ResponseWriter, r *http.Request){
 		json.NewEncoder(w).Encode(err)
         return
     }
+
 	u, err := handler.userDB.FindByEmail(user.Email)
 	if err!= nil {
 		w.WriteHeader(http.StatusNotFound)
@@ -55,9 +56,10 @@ func (handler *UserHandler) GetJWTUser(w http.ResponseWriter, r *http.Request){
 		json.NewEncoder(w).Encode(err)
 		return
 	}
-	_, tokenString, _ := handler.Jwt.Encode(map[string]interface{}{
+
+	_, tokenString, _ := jwt.Encode(map[string]interface{}{
 		"sub": u.ID.String(),
-		"exp": time.Now().Add(time.Second * time.Duration(handler.JwtExperiesIn)).Unix() ,
+		"exp": time.Now().Add(time.Second * time.Duration(JwtExperesIn)).Unix() ,
 	})
 
 	accessToken := struct {
@@ -66,6 +68,7 @@ func (handler *UserHandler) GetJWTUser(w http.ResponseWriter, r *http.Request){
 	}{
 		AccessToken: tokenString,
 	}
+	
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(accessToken)

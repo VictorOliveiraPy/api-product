@@ -34,3 +34,7 @@ Especificações OpenAPI/Swagger, arquivos de esquema JSON, arquivos de definiç
 
 ``/test``
 Aplicações de testes externos adicionais e dados de teste. Sinta-se à vontade para estruturar o diretório /test da maneira que quiser. Para projetos maiores, faz sentido ter um subdiretório de dados. Por exemplo, você pode ter /test/data ou /test/testdata se precisar que o Go ignore o que está naquele diretório. Observe que o Go também irá ignorar diretórios ou arquivos que começam com "." ou "_", para que você tenha mais flexibilidade em termos de como nomear seu diretório de dados de teste.
+
+```Gerar swagger```
+swag init -g cmd/server/main.go 
+
